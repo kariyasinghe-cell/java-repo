@@ -42,10 +42,11 @@ jobs:
         run: mvn test
 
       # Deploy (example: uploading a JAR to an S3 bucket)
-      # - name: Deploy to AWS S3
-      #   if: success()
-      #   env:
-      #     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      #     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      #   run: |
-      #     aws s3 cp target/your-app.jar s3://your-bucket-name/
+      - name: Deploy to AWS S3
+        if: success()
+        env:
+          # AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          # AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: |
+          # aws s3 cp target/your-app.jar s3://your-bucket-name/
+          echo "This is from S3"
