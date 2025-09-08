@@ -54,3 +54,8 @@ jobs:
         if: success()
         run: |
           echo "This is from S3"
+
+      - name: Deploy to GCP GCS
+        if: success()
+        run: |
+          echo "This is from GCS"
