@@ -1,39 +1,41 @@
 name: Java Release
 
 on:
+  # Manual trigger with user-definable inputs
   workflow_dispatch:
     inputs:
-      deploy_to_aws:
-        description: 'Deploy to AWS S3?'
-        required: false
-        default: 'false'
+      build_run_id:
+        description: 'The run ID of the build pipeline to download the artifact from'
+        required: true
+        type: string
+      environment:
         type: choice
+        description: 'Environment to deploy to'
+        required: true
+        default: 'staging'
         options:
-          - 'true'
-          - 'false'
-      deploy_to_gcp:
-        description: 'Deploy to GCP GCS?'
-        required: false
-        default: 'false'
-        type: choice
-        options:
-          - 'true'
-          - 'false'
+          - 'staging'
+          - 'production'
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
-
+    
     steps:
-      - name: Deploy to AWS S3
-        if: github.event_name == 'workflow_dispatch' && github.event.inputs.deploy_to_aws == 'true'
-        run: |
-          echo "Deploying to AWS S3..."
-          # aws s3 cp target/your-app.jar s3://your-bucket-name/
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: java-artifact
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: ${{ github.event.inputs.build_run_id }}
+          path: ./downloaded-artifact
 
-      - name: Deploy to GCP GCS
-        if: github.event_name == 'workflow_dispatch' && github.event.inputs.deploy_to_gcp == 'true'
-        run: |
-          echo "Deploying to GCP GCS..."
-          # gsutil cp target/your-app.jar gs://your-bucket-name/
+      - name: Verify artifact
+        run: ls -lh ./downloaded-artifact
 
+      - name: Deploy to ${{ github.event.inputs.environment }}
+        run: |
+          echo "Deploying artifact from build run ${{ github.event.inputs.build_run_id }} to ${{ github.event.inputs.environment }} environment..."
+          # Your deployment script here, using the downloaded artifact and the input values
+          # Example: java -jar ./downloaded-artifact/your-app.jar --env=${{ github.event.inputs.environment }}
