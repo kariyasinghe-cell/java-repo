@@ -1,7 +1,6 @@
 name: Java Release
 
 on:
-  # Manual trigger with user-definable inputs
   workflow_dispatch:
     inputs:
       build_run_id:
