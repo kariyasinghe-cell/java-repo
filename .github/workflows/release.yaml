@@ -1,1 +1,39 @@
+name: Java Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      deploy_to_aws:
+        description: 'Deploy to AWS S3?'
+        required: false
+        default: 'false'
+        type: choice
+        options:
+          - 'true'
+          - 'false'
+      deploy_to_gcp:
+        description: 'Deploy to GCP GCS?'
+        required: false
+        default: 'false'
+        type: choice
+        options:
+          - 'true'
+          - 'false'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to AWS S3
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.deploy_to_aws == 'true'
+        run: |
+          echo "Deploying to AWS S3..."
+          # aws s3 cp target/your-app.jar s3://your-bucket-name/
+
+      - name: Deploy to GCP GCS
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.deploy_to_gcp == 'true'
+        run: |
+          echo "Deploying to GCP GCS..."
+          # gsutil cp target/your-app.jar gs://your-bucket-name/
 
