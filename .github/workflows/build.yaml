@@ -7,6 +7,7 @@ on:
   pull_request:
     branches:
       - main
+  workflow_dispatch: # Add manual trigger for convenience
 
 jobs:
   build:
@@ -15,18 +16,19 @@ jobs:
     steps:
       # Checkout the repository
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       # Set up JDK
       - name: Set up JDK 17
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           java-version: 17
           distribution: 'temurin'
+          cache: 'maven'
 
       # Cache Maven dependencies
       - name: Cache Maven dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.m2
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
@@ -37,6 +39,14 @@ jobs:
       - name: Build with Maven
         run: mvn clean install
 
-      # Run tests
+      # Run tests (optional, but good practice)
       - name: Run tests
         run: mvn test
+
+      # Upload the build artifact (e.g., a JAR file)
+      - name: Upload Java artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: java-artifact
+          path: target/*.jar
+          retention-days: 7 # Optional: define how long to keep the artifact
